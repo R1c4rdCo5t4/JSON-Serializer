@@ -3,7 +3,9 @@ use std::sync::mpsc::Receiver;
 use std::sync::mpsc;
 use crate::types::JC;
 
-// copies json structure from src channel to dest channel
+/**
+ * Clones a JSON stream from a source channel to a destination channel
+ */
 pub fn clone_json_stream(src: &Receiver<JC>, dest: &Sender<JC>) {
     match src.recv().unwrap() {
         JC::Null => dest.send(JC::Null).unwrap(),
@@ -65,7 +67,9 @@ pub fn clone_json_stream(src: &Receiver<JC>, dest: &Sender<JC>) {
     }
 }
 
-// consumes json stream from channel
+/**
+ * Consumes a JSON stream by reading all values and discarding them
+ */
 pub fn consume_json_stream(receiver: &Receiver<JC>) {
     match receiver.recv().unwrap() {
         JC::Null | JC::Bool(_) | JC::Number(_) | JC::String(_) => {} // consume values

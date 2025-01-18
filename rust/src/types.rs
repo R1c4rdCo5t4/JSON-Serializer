@@ -24,7 +24,7 @@ pub enum JC {
     Element(mpsc::Receiver<JC>), // of an array or object
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Accessor {
     Field(String, Box<Accessor>), // .s a
     Index(usize, Box<Accessor>), // [n] a

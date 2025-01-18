@@ -4,6 +4,9 @@ use std::sync::mpsc;
 use crate::types::{Json, JC, Accessor};
 use crate::utils::{clone_json_stream, consume_json_stream};
 
+/**
+ * Serializes a JSON object into a stream of JC tokens
+ */
 pub fn serialise_json(value: &Json, sender: Sender<JC>) {
     match value {
         Json::Null => sender.send(JC::Null).unwrap(),
@@ -38,6 +41,9 @@ pub fn serialise_json(value: &Json, sender: Sender<JC>) {
     }
 }
 
+/**
+ * Deserializes a stream of JC tokens into a JSON object
+ */
 pub fn deserialise_json(receiver: std::sync::mpsc::Receiver<JC>) -> Json {
     match receiver.recv().unwrap() {
         JC::Null => Json::Null,
@@ -80,6 +86,9 @@ pub fn deserialise_json(receiver: std::sync::mpsc::Receiver<JC>) -> Json {
     }
 }
 
+/**
+ * Evaluates an accessor on a JSON stream
+ */
 pub fn eval(accessor: &Accessor, receiver: mpsc::Receiver<JC>, sender: mpsc::Sender<JC>) {
    match accessor {
         // end of the accessor
