@@ -1,5 +1,6 @@
 mod types;
-mod serialization;
+mod json;
+mod utils;
 
 fn main() {
     println!("Hello, world!");

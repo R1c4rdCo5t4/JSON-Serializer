@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::mpsc;
 use json_serializer::types::Json;
-use json_serializer::serialization::{serialise_json, deserialise_json};
+use json_serializer::json::{serialise_json, deserialise_json};
 
 #[test]
 fn test_serialization() {

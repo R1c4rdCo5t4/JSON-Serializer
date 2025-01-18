@@ -21,5 +21,13 @@ pub enum JC {
     EndArray,
     BeginObject,
     EndObject,
-    Element(mpsc::Receiver<JC>), // represents an element of an array or object
+    Element(mpsc::Receiver<JC>), // of an array or object
+}
+
+#[derive(Debug)]
+pub enum Accessor {
+    Field(String, Box<Accessor>), // .s a
+    Index(usize, Box<Accessor>), // [n] a
+    Map(Box<Accessor>), // map a
+    End,
 }
