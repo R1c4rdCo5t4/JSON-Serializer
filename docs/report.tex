@@ -1,0 +1,149 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+
+\title{
+  Fundamentals of Programming Languages\\[1ex]
+  Assignment 6\\[1ex]
+  Message-passing Concurrent Programming in Go and Rust}
+\author{Mestrado em Engenharia Informática\\
+  Faculdade de Ciências da Universidade de Lisboa
+}
+\date{2024/2025}
+
+\begin{document}
+\maketitle
+\setlength{\parskip}{1ex}
+\thispagestyle{empty}
+
+\begin{center}
+
+\begin{tabular}{rl}
+    Ricardo Manuel Sousa Costa & Nº 64371\\[5mm]
+\end{tabular}\\
+
+Prof. Vasco Vasconcelos
+
+\end{center}
+
+\clearpage
+
+\section{Introduction}
+
+Both Rust and Go implementations followed the same design principles using a message-passing approach.
+The solutions involve three key components:
+
+\begin{itemize}
+    \item \textbf{Serialization:} Converting a representation in memory of a JSON object into a stream of tokens (JC) send over a channel;
+    \item \textbf{Deserialization:} Converting a stream of tokens (JC) into a representation in memory of a JSON object;
+    \item \textbf{Evaluation:} Applying a accessor to transform a JSON stream into a new stream of tokens.
+\end{itemize}
+
+While the overall architecture is similar in both implementations, there are notable differences in implementation due to the inherent features of both languages.
+
+\section{Rust Implementation}
+
+Rust leverages major features that made the implementation of the solution more straightforward:
+
+\begin{itemize}
+    \item \textbf{Enums}: For the definition of types (\texttt{Json}, \texttt{JC}, \texttt{Accessor}) in a simpler way;
+    \item \textbf{Pattern Matching}: For control flow and type safety, that allowed for a more concise and readable code;
+    \item \textbf{Thread safety}: Enforced by the compiler through ownership and borrowing, which allowed for a more robust and safe implementation.
+\end{itemize}
+
+\section{Go Implementation}
+
+Go also has some features that helped in the implementation of the solution in different ways:
+
+\begin{itemize}
+    \item \textbf{Goroutines}: For concurrent execution of the different components of the solution;
+    \item \textbf{Built-in Channels}: For communication between the different components of the solution;
+    \item \textbf{Simplicity}: Go's simplicity and ease of use made the implementation a bit more straightforward.
+\end{itemize}
+
+\section{Major Decisions Taken}
+
+In both implementations, the major decisions taken were related to the design of the types and the control flow of the program, namely in the definition of the streaming tokens and the accessor types. In Rust the types were implemented using enums while in Go types were implemented using structs, which led to some differences in the implementation.
+
+In the \texttt{JC} type definitions, there was the need to add control tokens to signal the start and end of an array or object in order to correctly interpret the stream of tokens and convert it into a JSON object properly. Additionally, there was also the need to a subchannel to send the elements of that array or object in particular, using a \texttt{mscp::Receiver} in Rust and a \texttt{chan} in Go.
+
+In the \texttt{Accessor} type definitions, \texttt{Field} was used to represent object property access, \texttt{Index} for array index accessing, \texttt{Map} for applying accessors to arrays or objects and \texttt{End} to signal the end of the accessor chain. Also, in Go, there was added a \texttt{Sub} type to chain accessors, which was not needed in Rust.
+
+\section{Comparison of Implementations}
+
+\subsection{Rust}
+
+\subsubsection{Advantages}
+
+Rust advantages over Go:
+
+\begin{itemize}
+  \item Strong type and memory safety prevents many bugs at compile time;
+  \item Pattern matching logic makes the code more readable and concise;
+  \item Ownership and borrowing ensure thread safety and avoid data races, with no need for synchronization;
+\end{itemize}
+
+
+\subsubsection{Disadvantages}
+
+Rust disadvantages over Go:
+
+\begin{itemize}
+  \item Higher complexity due to the ownership and borrowing system;
+  \item Heavier threading model compared to Go's lightweight goroutines.
+\end{itemize}
+
+\clearpage
+
+\subsection{Go}
+
+\subsubsection{Advantages}
+
+Go advantages over Rust:
+
+\begin{itemize}
+  \item Lightweight goroutines with a simpler implementation;
+  \item Simpler channels for communication between goroutines.
+\end{itemize}
+
+\subsubsection{Disadvantages}
+
+Go disadvantages over Rust:
+
+\begin{itemize}
+  \item Lack of enums and pattern matching leads to a more verbose and less readable code;
+  \item More checks at runtime than compile time due to lack of strong type system;
+  \item Worse packaging system and testing tools.
+\end{itemize}
+
+\section{Major Difficulties}
+
+\subsection{Rust}
+
+The major difficulties encountered in Rust were related to the ownership and borrowing system, which made it a bit harder to implement the solution, but once the program compiled, it immediately worked correctly, which is the great thing about Rust.
+
+\subsection{Go}
+
+The major difficulties encountered in Go were related to the lack of enums and pattern matching, which made it a bit harder to define types and the control flow of the program. In Go, some bugs were only found at runtime, which made the debugging process a bit more difficult.
+
+\clearpage
+
+\section{Conclusion}
+
+Both languages offer effective solutions for this problem with messaging passing concurrency.
+The choice is a matter of trade-offs of both languages:
+
+\begin{itemize}
+  \item Rust is ideal for applications where type safety, performance and robust error handling are critical;
+  \item Go is ideal for applications where simplicity, ease of use and lightweight concurrency are more important.
+\end{itemize}
+
+Personally, I prefered Rust over Go, mainly because of its strong typing guarantees and syntax, which I find more enjoyable to work with. Also I had less problems and difficulties with Rust than with Go.
+
+\section{Running Both Solutions}
+
+The steps for running both solutions can be found in the \href{../README.md}{README} file.
+
+\end{document}

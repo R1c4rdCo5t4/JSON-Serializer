@@ -20,7 +20,7 @@ cargo run
 
 ```bash
 cd go
-go run .
+go run ./main
 ```
 
 ### How to Test
