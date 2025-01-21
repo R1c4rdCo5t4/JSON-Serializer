@@ -32,9 +32,9 @@ func SerializeJson(value Json, out chan<- JC) {
 			out <- JC{Type: JCElement, Sub: subChan}
 
 			// serialize key value pair in separate goroutine
-			go func(k string, v Json, ch chan JC) {
+			go func(k string, v Json, ch chan JC){
 				ch <- JC{Type: JCString, StringVal: k} // key
-				SerializeJson(v, ch)                   // value
+				SerializeJson(v, ch) // value
 				close(ch)
 			}(key, val, subChan)
 		}
@@ -47,7 +47,7 @@ func SerializeJson(value Json, out chan<- JC) {
 func DeserializeJson(in <-chan JC) Json {
 	token, ok := <-in
 	if !ok {
-		panic("Unexpected end of input while deserializing json")
+		panic("Unexpected error while deserializing json")
 	}
 	switch token.Type {
 	case JCNull:
@@ -186,21 +186,21 @@ func Eval(accessor *Accessor, in <-chan JC, out chan<- JC) {
 		if token.Type != JCBeginArray {
 			panic("Expected array for index accessor")
 		}
-		currentIndex := 0
+		i := 0
 		for {
 			token := <-in
 			if token.Type == JCEndArray {
 				break
 			}
 			if token.Type == JCElement {
-				if currentIndex == accessor.Index {
+				if i == accessor.Index {
 					Eval(accessor.Sub, token.Sub, out)
 					break
 				}
 				// consume unused channel
 				for range token.Sub {
 				}
-				currentIndex++
+				i++
 			}
 		}
 		// consume remaining tokens

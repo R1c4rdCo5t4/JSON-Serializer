@@ -1,20 +1,20 @@
 use std::collections::HashMap;
 use std::sync::mpsc;
 use json_serializer::types::Json;
-use json_serializer::json::{serialise_json, deserialise_json};
+use json_serializer::json::{serialize_json, deserialize_json};
 
 #[test]
 fn test_serialization() {
 
-    let mut inner_object = HashMap::new();
-    inner_object.insert("x".to_string(), Json::Number(42.0));
-    inner_object.insert("y".to_string(), Json::Bool(true));
+    let mut obj = HashMap::new();
+    obj.insert("x".to_string(), Json::Number(123.0));
+    obj.insert("y".to_string(), Json::Bool(true));
 
-    let sample = Json::Object({
+    let json = Json::Object({
         let mut map = HashMap::new();
     
         map.insert("message".to_string(), Json::String("Hello World".to_string()));
-        map.insert("nested".to_string(), Json::Object(inner_object));
+        map.insert("nested".to_string(), Json::Object(obj));
         map.insert(
             "array".to_string(),
             Json::Array(vec![
@@ -34,7 +34,7 @@ fn test_serialization() {
     });
     
     let (sender, receiver) = mpsc::channel();
-    serialise_json(&sample, sender);
-    let deserialized = deserialise_json(receiver);
-    assert_eq!(sample, deserialized);
+    serialize_json(&json, sender);
+    let deserialized = deserialize_json(receiver);
+    assert_eq!(json, deserialized);
 }

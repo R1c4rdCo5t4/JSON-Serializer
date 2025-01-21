@@ -7,7 +7,7 @@ use crate::utils::{clone_json_stream, consume_json_stream};
 /**
  * Serializes a JSON object into a stream of JC tokens
  */
-pub fn serialise_json(value: &Json, sender: Sender<JC>) {
+pub fn serialize_json(value: &Json, sender: Sender<JC>) {
     match value {
         Json::Null => sender.send(JC::Null).unwrap(),
         Json::Bool(bool) => sender.send(JC::Bool(*bool)).unwrap(),
@@ -20,7 +20,7 @@ pub fn serialise_json(value: &Json, sender: Sender<JC>) {
                 sender.send(JC::Element(arr_receiver)).unwrap();
 
                 // send element
-                serialise_json(elem, arr_sender);
+                serialize_json(elem, arr_sender);
             }
             sender.send(JC::EndArray).unwrap();
         }
@@ -34,7 +34,7 @@ pub fn serialise_json(value: &Json, sender: Sender<JC>) {
                 key_value_sender.send(JC::String(key.clone())).unwrap();
 
                 // send value
-                serialise_json(value, key_value_sender);
+                serialize_json(value, key_value_sender);
             }
             sender.send(JC::EndObject).unwrap();
         }
@@ -44,7 +44,7 @@ pub fn serialise_json(value: &Json, sender: Sender<JC>) {
 /**
  * Deserializes a stream of JC tokens into a JSON object
  */
-pub fn deserialise_json(receiver: std::sync::mpsc::Receiver<JC>) -> Json {
+pub fn deserialize_json(receiver: std::sync::mpsc::Receiver<JC>) -> Json {
     match receiver.recv().unwrap() {
         JC::Null => Json::Null,
         JC::Bool(bool) => Json::Bool(bool),
@@ -55,7 +55,7 @@ pub fn deserialise_json(receiver: std::sync::mpsc::Receiver<JC>) -> Json {
             loop {
                 match receiver.recv().unwrap() {
                     JC::EndArray => return Json::Array(array),
-                    JC::Element(value_receiver) => array.push(deserialise_json(value_receiver)),
+                    JC::Element(value_receiver) => array.push(deserialize_json(value_receiver)),
                     _ => panic!("Unexpected token in array deserialization"),
                 }
             }
@@ -72,9 +72,8 @@ pub fn deserialise_json(receiver: std::sync::mpsc::Receiver<JC>) -> Json {
                             JC::String(s) => s,
                             _ => panic!("Unexpected object key"),
                         };
-
                         // get value
-                        let value = deserialise_json(key_value_receiver);
+                        let value = deserialize_json(key_value_receiver);
 
                         object.insert(key, value);
                     }
@@ -114,11 +113,11 @@ pub fn eval(accessor: &Accessor, receiver: mpsc::Receiver<JC>, sender: mpsc::Sen
                                     _ => panic!("Unexpected object key, must be string"),
                                 };
                                 if key == *field {
-                                    // the field we want
+                                    // field found
                                     found = true;
                                     eval(next, key_value_receiver, sender.clone());
                                 } else {
-                                    // we dont want this field
+                                    // discard value
                                     consume_json_stream(&key_value_receiver);
                                 }
                             }
@@ -135,7 +134,7 @@ pub fn eval(accessor: &Accessor, receiver: mpsc::Receiver<JC>, sender: mpsc::Sen
                 JC::BeginArray => {
                     let mut found = false;
                     let mut i = 0;
-                    loop {
+                    loop{
                         match receiver.recv().unwrap() {
                             JC::EndArray => {
                                 if !found {
@@ -174,7 +173,7 @@ pub fn eval(accessor: &Accessor, receiver: mpsc::Receiver<JC>, sender: mpsc::Sen
                                 let (mapped_sender, mapped_receiver) = mpsc::channel();
                                 sender.send(JC::Element(mapped_receiver)).unwrap();
 
-                                // element transformation
+                                // map element
                                 eval(next, value_receiver, mapped_sender);
                             }
                             _ => panic!("Unexpected token in array deserialization"),

@@ -12,7 +12,7 @@ pub enum Json {
 }
 
 #[derive(Debug)]
-pub enum JC {
+pub enum JC { // tokens for streaming JSON
     Null,
     Bool(bool),
     Number(f64),

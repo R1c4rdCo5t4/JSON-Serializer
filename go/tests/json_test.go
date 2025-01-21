@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"testing"
 	. "json-serializer/src"
+	"testing"
 )
 
 func TestSerialization(t *testing.T) {
@@ -18,18 +18,18 @@ func TestSerialization(t *testing.T) {
 
 	// serialize
 	jsonStream := make(chan JC)
-	done := make(chan string)
+	done := make(chan bool)
 	go func() {
 		SerializeJson(input, jsonStream)
 		close(jsonStream)
-		done <- "done"
+		done <- true
 	}()
 
 	// deserialize
 	var output Json
 	go func() {
 		output = DeserializeJson(jsonStream)
-		done <- "done"
+		done <- true
 	}()
 
 	// wait for goroutines to finish

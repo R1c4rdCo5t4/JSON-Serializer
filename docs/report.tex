@@ -36,7 +36,7 @@ Both Rust and Go implementations followed the same design principles using a mes
 The solutions involve three key components:
 
 \begin{itemize}
-    \item \textbf{Serialization:} Converting a representation in memory of a JSON object into a stream of tokens (JC) send over a channel;
+    \item \textbf{Serialization:} Converting a representation in memory of a JSON object into a stream of tokens (JC) sent over a channel;
     \item \textbf{Deserialization:} Converting a stream of tokens (JC) into a representation in memory of a JSON object;
     \item \textbf{Evaluation:} Applying a accessor to transform a JSON stream into a new stream of tokens.
 \end{itemize}
@@ -45,12 +45,12 @@ While the overall architecture is similar in both implementations, there are not
 
 \section{Rust Implementation}
 
-Rust leverages major features that made the implementation of the solution more straightforward:
+Rust leverages major features that were used in the implementation of the solution:
 
 \begin{itemize}
     \item \textbf{Enums}: For the definition of types (\texttt{Json}, \texttt{JC}, \texttt{Accessor}) in a simpler way;
     \item \textbf{Pattern Matching}: For control flow and type safety, that allowed for a more concise and readable code;
-    \item \textbf{Thread safety}: Enforced by the compiler through ownership and borrowing, which allowed for a more robust and safe implementation.
+    \item \textbf{Thread safety}: Enforced by the compiler through the ownership and borrowing system, which allowed for a more robust and safe implementation.
 \end{itemize}
 
 \section{Go Implementation}
@@ -58,18 +58,18 @@ Rust leverages major features that made the implementation of the solution more 
 Go also has some features that helped in the implementation of the solution in different ways:
 
 \begin{itemize}
-    \item \textbf{Goroutines}: For concurrent execution of the different components of the solution;
+    \item \textbf{Goroutines}: For concurrent execution of the different components of the solution with lightweight threads;
     \item \textbf{Built-in Channels}: For communication between the different components of the solution;
-    \item \textbf{Simplicity}: Go's simplicity and ease of use made the implementation a bit more straightforward.
+    \item \textbf{Simplicity}: Go's simplicity and ease of use.
 \end{itemize}
 
 \section{Major Decisions Taken}
 
 In both implementations, the major decisions taken were related to the design of the types and the control flow of the program, namely in the definition of the streaming tokens and the accessor types. In Rust the types were implemented using enums while in Go types were implemented using structs, which led to some differences in the implementation.
 
-In the \texttt{JC} type definitions, there was the need to add control tokens to signal the start and end of an array or object in order to correctly interpret the stream of tokens and convert it into a JSON object properly. Additionally, there was also the need to a subchannel to send the elements of that array or object in particular, using a \texttt{mscp::Receiver} in Rust and a \texttt{chan} in Go.
+In the \texttt{JC} type definitions, there was the need to add control tokens to signal the start and end of an array or object in order to correctly interpret the stream of tokens and convert it into a JSON representation properly. Additionally, there was also the need to a subchannel to send the elements of that array or object in particular, using a \texttt{mscp::Receiver} in Rust and a \texttt{chan} in Go.
 
-In the \texttt{Accessor} type definitions, \texttt{Field} was used to represent object property access, \texttt{Index} for array index accessing, \texttt{Map} for applying accessors to arrays or objects and \texttt{End} to signal the end of the accessor chain. Also, in Go, there was added a \texttt{Sub} type to chain accessors, which was not needed in Rust.
+In the \texttt{Accessor} type definitions, \texttt{Field} was used to represent object property access, \texttt{Index} for array index accessing, \texttt{Map} for applying accessors to arrays or objects and \texttt{End} to signal the end of the accessor chain. Also, in Go, there was added a \texttt{Sub} type to chain accessors, which was not needed in Rust since enums can direclty store nested accessor values as part of their definition, which is not possible in Go with structs.
 
 \section{Comparison of Implementations}
 
@@ -81,8 +81,8 @@ Rust advantages over Go:
 
 \begin{itemize}
   \item Strong type and memory safety prevents many bugs at compile time;
-  \item Pattern matching logic makes the code more readable and concise;
-  \item Ownership and borrowing ensure thread safety and avoid data races, with no need for synchronization;
+  \item Pattern matching logic makes the code more readable and concise.
+  \item Ownership and borrowing ensure thread safety and avoid data races, with no need for manual synchronization;
 \end{itemize}
 
 
@@ -91,7 +91,7 @@ Rust advantages over Go:
 Rust disadvantages over Go:
 
 \begin{itemize}
-  \item Higher complexity due to the ownership and borrowing system;
+  \item Higher complexity due to the ownership and borrowing system, which required a function for cloning and discarding JSON objects;
   \item Heavier threading model compared to Go's lightweight goroutines.
 \end{itemize}
 

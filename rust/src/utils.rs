@@ -89,9 +89,9 @@ pub fn consume_json_stream(receiver: &Receiver<JC>) {
                 match receiver.recv().unwrap() {
                     JC::EndObject => break,
                     JC::Element(field_receiver) => {
-                        let key = field_receiver.recv().unwrap();
+                        let key = field_receiver.recv().unwrap(); // consume key
                         if let JC::String(_field_name) = key {
-                            consume_json_stream(&field_receiver); // discard value
+                            consume_json_stream(&field_receiver); // consume value
                         } else {
                             panic!("Expected object key string, got: {:?}", key);
                         }

@@ -50,6 +50,7 @@ type Accessor struct {
 	Field string // s. a
 	Index int    // [n] a
 	Map   bool   // map a
-	Sub   *Accessor
+	Sub   *Accessor // for nested accessors
 	End   bool
 }
+
